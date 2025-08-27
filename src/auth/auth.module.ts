@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from 'src/users/users.module';
@@ -7,10 +7,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { PrismaService } from 'src/core/services/prisma.service';
+import { GuestOnlyGuard } from './guards/guest-only.guard';
 
 @Module({
   imports: [
-    UsersModule,
+    forwardRef(() => UsersModule),
     ConfigModule,
     PassportModule,
     JwtModule.register({
@@ -19,7 +20,7 @@ import { PrismaService } from 'src/core/services/prisma.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PrismaService],
-  exports: [AuthService],
+  providers: [AuthService, JwtStrategy, PrismaService, GuestOnlyGuard],
+  exports: [AuthService, JwtModule, GuestOnlyGuard],
 })
 export class AuthModule {}
