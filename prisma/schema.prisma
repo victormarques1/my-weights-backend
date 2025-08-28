@@ -15,11 +15,12 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  password String
-  workouts Workout[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  workouts  Workout[]
+  exercises Exercise[]
 
   @@map("users")
 }
@@ -35,9 +36,12 @@ model Workout {
 }
 
 model Exercise {
-  id       Int               @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   name     String
   category String
+  userId   Int
+
+  user User @relation(fields: [userId], references: [id])
   workouts WorkoutExercise[]
 
   @@map("exercises")
