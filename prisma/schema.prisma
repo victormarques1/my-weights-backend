@@ -19,6 +19,9 @@ model User {
   name      String
   email     String     @unique
   password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   workouts  Workout[]
   exercises Exercise[]
 
@@ -29,6 +32,9 @@ model Workout {
   id        Int               @id @default(autoincrement())
   name      String
   userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   user      User              @relation(fields: [userId], references: [id])
   exercises WorkoutExercise[]
 
@@ -38,13 +44,26 @@ model Workout {
 model Exercise {
   id       Int    @id @default(autoincrement())
   name     String
-  category String
+  category MuscleGroup
   userId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
   workouts WorkoutExercise[]
 
   @@map("exercises")
+}
+
+enum MuscleGroup {
+  Abs
+  Back
+  Chest
+  Shoulders
+  Biceps
+  Triceps
+  Legs
+  Cardio
 }
 
 model WorkoutExercise {
@@ -55,6 +74,9 @@ model WorkoutExercise {
   reps        Int
   weight      Float
   description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   workout     Workout  @relation(fields: [workoutId], references: [id])
   exercise    Exercise @relation(fields: [exerciseId], references: [id])
 

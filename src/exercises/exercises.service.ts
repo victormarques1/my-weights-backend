@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/core/services/prisma.service';
 import { ExerciseResponseDto } from './dto/exercise-response.dto';
 import { CreateUserExerciseDto } from './dto/create-user-exercise.dto';
@@ -33,7 +37,7 @@ export class ExercisesService {
   async findUserExercises(userId: number) {
     return this.prisma.exercise.findMany({
       where: { userId },
-      orderBy: { name: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

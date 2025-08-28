@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { MuscleGroup } from 'generated/prisma';
 
 export class CreateUserExerciseDto {
   @IsNotEmpty({ message: 'Nome é obrigatório' })
@@ -9,6 +10,6 @@ export class CreateUserExerciseDto {
   name: string;
 
   @IsNotEmpty({ message: 'Categoria é obrigatória' })
-  @IsString()
-  category: string;
+  @IsEnum(MuscleGroup, { message: 'Categoria inválida' })
+  category: MuscleGroup;
 }
