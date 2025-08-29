@@ -15,7 +15,6 @@ export class WorkoutsService {
     userId: number,
     createWorkoutDto: CreateWorkoutDto,
   ): Promise<WorkoutResponseDto> {
-    // Verificar se usuário já tem ficha com esse nome
     const existingWorkout = await this.prisma.workout.findFirst({
       where: {
         name: createWorkoutDto.name,
@@ -27,7 +26,6 @@ export class WorkoutsService {
       throw new ConflictException('Você já possui uma ficha com esse nome');
     }
 
-    // Verificar se todos os exercícios existem e pertencem ao usuário
     const exerciseIds = createWorkoutDto.exercises.map((e) => e.exerciseId);
     const exercises = await this.prisma.exercise.findMany({
       where: {
@@ -42,9 +40,7 @@ export class WorkoutsService {
       );
     }
 
-    // Criar ficha com exercícios usando transação
     const workout = await this.prisma.$transaction(async (tx) => {
-      // Criar a ficha
       const newWorkout = await tx.workout.create({
         data: {
           name: createWorkoutDto.name,
@@ -52,7 +48,6 @@ export class WorkoutsService {
         },
       });
 
-      // Criar os exercícios da ficha
       await tx.workoutExercise.createMany({
         data: createWorkoutDto.exercises.map((exercise) => ({
           workoutId: newWorkout.id,
@@ -65,7 +60,6 @@ export class WorkoutsService {
         })),
       });
 
-      // Buscar ficha completa com exercícios
       return tx.workout.findUnique({
         where: { id: newWorkout.id },
         include: {
@@ -80,5 +74,21 @@ export class WorkoutsService {
     });
 
     return new WorkoutResponseDto(workout);
+  }
+
+  async findAll(userId: number): Promise<WorkoutResponseDto[]> {
+    const workouts = await this.prisma.workout.findMany({
+      where: { userId: userId },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
+          orderBy: { id: 'asc' },
+        },
+      },
+    });
+
+    return workouts.map((workout) => new WorkoutResponseDto(workout));
   }
 }

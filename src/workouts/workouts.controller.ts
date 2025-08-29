@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { WorkoutsService } from './workouts.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
@@ -15,5 +22,10 @@ export class WorkoutsController {
     @Body() createWorkoutDto: CreateWorkoutDto,
   ): Promise<WorkoutResponseDto> {
     return this.workoutService.create(req.user.id, createWorkoutDto);
+  }
+
+  @Get()
+  async findAll(@Request() req): Promise<WorkoutResponseDto[]> {
+    return this.workoutService.findAll(req.user.id);
   }
 }
